@@ -3,10 +3,18 @@ runtime: python3
 build:
   commands:
     pre-build:
-      - pip install --upgrade pip
+      - echo "=== Starting pre-build ==="
+      - python --version
+      - pip install --upgrade pip setuptools wheel
+      - echo "=== Pre-build complete ==="
     build:
-      - pip install -r requirements.txt
+      - echo "=== Starting dependency installation ==="
+      - pip install --no-cache-dir -r requirements.txt -v
+      - echo "=== Build complete ==="
 run:
   command: streamlit run main.py --server.port=8080 --server.address=0.0.0.0 --server.headless=true
   network:
     port: 8080
+  env:
+    - name: PYTHONUNBUFFERED
+      value: "1"
