@@ -3,6 +3,13 @@ import streamlit as st
 from dotenv import load_dotenv
 import os
 
+st.set_page_config(
+    page_title="riftMetrics",
+    page_icon="assets/RiftMetricsTransparent.png",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 from api.riot_api import fetch_all_match_data_direct
 from ui.overview_component import (
     display_player_info_card,
@@ -27,13 +34,6 @@ from ui.welcome_component import render_welcome_page
 from api.riot_api import(
     get_match_ids_by_puuid,
     get_match_details_by_matchId
-)
-
-st.set_page_config(
-    page_title="riftMetrics",
-    page_icon="assets/RiftMetricsTransparent.png",
-    layout="wide",
-    initial_sidebar_state="expanded"
 )
 
 altair_chart_mobile_responsiveness()
