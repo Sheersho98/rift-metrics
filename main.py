@@ -36,7 +36,12 @@ altair_chart_mobile_responsiveness()
 load_dotenv()
 
 # Get configuration from environment
-RIOT_API_KEY = os.getenv("RIOT_API_KEY")
+try:
+    from utils.secrets import get_riot_api_key
+    RIOT_API_KEY  = get_riot_api_key()
+except Exception as e:
+    #fallback
+    RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
