@@ -3,7 +3,6 @@ from utils.helpers import get_champion_icon_url
 from ui.styles import match_history_styles
 
 def get_summoner_spell_icon(spell_id):
-    """Get summoner spell icon URL from spell ID"""
     spell_map = {
         1: "SummonerBoost",
         3: "SummonerExhaust",
@@ -25,7 +24,6 @@ def get_summoner_spell_icon(spell_id):
     return f"https://ddragon.leagueoflegends.com/cdn/15.21.1/img/spell/{spell_name}.png"
 
 def get_item_icon(item_id):
-    """Get item icon URL from item ID"""
     if item_id == 0:
         return None
     return f"https://ddragon.leagueoflegends.com/cdn/15.21.1/img/item/{item_id}.png"

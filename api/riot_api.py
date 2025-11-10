@@ -232,11 +232,10 @@ def get_summonerInfo_by_puuid(region: str, puuid: str) -> str:
         return {"error": str(e)}
 
 def get_profile_icon_url(profile_icon_id: int) -> str:
-    """Get profile icon URL"""
     return f"https://ddragon.leagueoflegends.com/cdn/15.21.1/img/profileicon/{profile_icon_id}.png"
 
 def get_league_entries_by_puuid(region: str, puuid: str) -> dict:
-    """Get ranked information for a player"""
+    #ranked info
     routing_region = get_routing_region_summoner(region)
     base_url = f"https://{routing_region.lower()}.api.riotgames.com"
     headers = {"X-Riot-Token": RIOT_API_KEY}
@@ -278,7 +277,6 @@ def get_league_entries_by_puuid(region: str, puuid: str) -> dict:
     
 
 async def fetch_url_quick(url: str, client: httpx.AsyncClient):
-    """Generic async fetch with 429 rate limit signaling."""
     headers = {"X-Riot-Token": RIOT_API_KEY}
     try:
         response = await client.get(url, headers=headers)
@@ -298,7 +296,7 @@ async def fetch_url_quick(url: str, client: httpx.AsyncClient):
 LONG_WAIT_REQUIRED = 125.0 
 
 async def fetch_match_details_async(region: str, match_id: str, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
-    """Async fetch with burst control (Semaphore) and retry loop for 429 errors."""
+    #Async fetch with burst control (Semaphore) and retry loop for 429 errors.
 
     MAX_RETRIES = 5
     DELAY_PER_REQUEST = 1.5
@@ -312,7 +310,7 @@ async def fetch_match_details_async(region: str, match_id: str, client: httpx.As
         
         for attempt in range(MAX_RETRIES):
             
-            #minimal non-blocking delay on every attempt to protect from internal bursts)
+            #minimal non-blocking delay on every attempt to protect from internal bursts
             await asyncio.sleep(DELAY_PER_REQUEST) 
 
             result = await fetch_url_quick(url, client)

@@ -8,15 +8,8 @@ def display_ai_summary_button(
     button_label: str = "✨ Get AI Summary",
     page_metrics: dict = None
 ):
-    """
-    Display an AI summary button that generates on-demand summaries.
     
-    Args:
-        page_name: One of 'champion_insights', 'advanced_stats', 'early_late', 
-                   'matchup_analysis', 'performance_trends'
-        button_label: Custom button text (optional)
-        page_metrics: Optional dict of page-specific metrics to pass to AI
-    """
+    #Display an AI summary button that generates on-demand summaries.
     # Create a unique key for this page's summary state
     current_user_id = st.session_state.get('current_user_id', 'unknown')
     summary_key = f"{current_user_id}_{page_name}_summary"

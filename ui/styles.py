@@ -1,7 +1,7 @@
 import streamlit as st
 
 def apply_global_styles():
-    """Apply all global CSS styling to the app"""
+    #Apply global CSS styling to the app
     st.markdown("""
         <style>
         /* Global enhancements 
@@ -62,7 +62,7 @@ def apply_global_styles():
 
 
 def apply_welcome_background_styles():
-    """Apply the welcome page background image and styling"""
+    # welcome page background image and styling
     st.markdown("""
         <style>
         .stApp {
@@ -80,7 +80,7 @@ def apply_welcome_background_styles():
 
 
 def remove_welcome_background_styles():
-    """Remove welcome page background styling"""
+    #Remove welcome page background styling
     st.markdown("""
         <style>
         .stApp {

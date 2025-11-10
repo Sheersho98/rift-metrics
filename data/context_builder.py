@@ -7,12 +7,8 @@ from data.metrics import (
 
 
 def build_rich_player_context(raw_matches: list, metrics: dict, champ_insights: pd.DataFrame) -> dict:
-    """
-    Builds a comprehensive but structured context from raw match data.
-    This gives the AI access to ALL stats without overwhelming it.
-    
-    Returns a dict that can be converted to JSON and injected into prompts.
-    """
+    #rich context
+    #structured context for raw data for the AI - returns dict (converted into json and injected into prompts)
     if not raw_matches or len(raw_matches) == 0:
         return {}
     
@@ -203,7 +199,6 @@ def build_rich_player_context(raw_matches: list, metrics: dict, champ_insights: 
     return context
 
 def build_champion_specific_context(raw_matches: list) -> dict:
-    """Build deep per-champion statistics"""
     champion_data = {}
     
     for match in raw_matches:
@@ -257,7 +252,6 @@ def build_champion_specific_context(raw_matches: list) -> dict:
     return champion_data
 
 def analyze_early_game_patterns(raw_matches: list) -> dict:
-    """Analyze laning phase and early game performance"""
     early_wins = [m for m in raw_matches if m.get('win')]
     early_losses = [m for m in raw_matches if not m.get('win')]
     
@@ -277,7 +271,6 @@ def analyze_early_game_patterns(raw_matches: list) -> dict:
     }
 
 def analyze_damage_profile(raw_matches: list) -> dict:
-    """Analyze damage composition and efficiency"""
     total_physical = sum(m.get('physicalDamageDealtToChampions', 0) for m in raw_matches)
     total_magic = sum(m.get('magicDamageDealtToChampions', 0) for m in raw_matches)
     total_true = sum(m.get('trueDamageDealtToChampions', 0) for m in raw_matches)
@@ -292,7 +285,6 @@ def analyze_damage_profile(raw_matches: list) -> dict:
     }
 
 def build_matchup_data(raw_matches: list) -> dict:
-    """Build champion vs champion matchup statistics"""
     matchups = {}
     
     for match in raw_matches:
@@ -404,7 +396,6 @@ def build_matchup_data(raw_matches: list) -> dict:
     return matchups
 
 def build_opponent_analysis(raw_matches: list) -> dict:
-    """Aggregate stats against specific opponents regardless of your champion"""
     opponent_stats = {}
     
     for match in raw_matches:
@@ -443,7 +434,6 @@ def build_opponent_analysis(raw_matches: list) -> dict:
     return opponent_stats
 
 def analyze_role_distribution(raw_matches: list) -> dict:
-    """Analyze which roles the player plays and their performance by role"""
     role_stats = {}
     
     for match in raw_matches:
@@ -491,10 +481,8 @@ def analyze_role_distribution(raw_matches: list) -> dict:
     }
 
 def calculate_role_consistency(raw_matches: list) -> dict:
-    """
-    Calculate player's most played roles and consistency in sticking to them.
-    Returns top 2 roles and how often they play them.
-    """
+    #Calculate player's most played roles and consistency in sticking to them.
+    
     role_counts = {}
     
     for match in raw_matches:
@@ -601,10 +589,8 @@ def analyze_laner_stats(detailed_matches:list) -> dict:
     }
 
 def analyze_jungle_stats(detailed_matches: list) -> dict:
-    """
-    Aggregate jungle-specific statistics across all jungle games.
-    Only considers games where the player was actually jungling.
-    """
+    #Aggregate jungle-specific statistics across all jungle games.
+    
     jungle_matches = [m for m in detailed_matches if m.get('isJungler', False)]
     
     if not jungle_matches:
@@ -641,10 +627,6 @@ def analyze_jungle_stats(detailed_matches: list) -> dict:
     }
 
 def analyze_support_stats(detailed_matches: list) -> dict:
-    """
-    Aggregate support-specific statistics across all support games.
-    Only considers games where the player was actually supporting.
-    """
     support_matches = [m for m in detailed_matches if m.get('isSupport', False)]
     
     if not support_matches:
@@ -682,7 +664,7 @@ def analyze_support_stats(detailed_matches: list) -> dict:
     }
 
 def analyze_objective_control_by_outcome(raw_matches: list) -> dict:
-    """Compare objective control between wins and losses"""
+    #objective control in wins vs losses
     wins = [m for m in raw_matches if m.get('win')]
     losses = [m for m in raw_matches if not m.get('win')]
     
@@ -719,7 +701,5 @@ def analyze_objective_control_by_outcome(raw_matches: list) -> dict:
     }
 
 def format_context_for_prompt(context: dict) -> str:
-    """
-    Converts the rich context dict into a clean, readable format for AI prompts.
-    """
+    #Converts the rich context dict into a clean, readable format for AI prompts
     return json.dumps(context, indent=2)

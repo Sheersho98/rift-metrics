@@ -111,18 +111,8 @@ def calculate_dominance_score(filtered_matches):
 
 
 def build_filtered_context(filtered_matches, metrics, champ_insights, queue_type):
-    """
-    Build rich context for filtered data, with caching for 'all' games.
+    #Build rich context for filtered data, with caching for 'all' games.
     
-    Args:
-        filtered_matches: List of raw match dictionaries
-        metrics: Calculated metrics dict
-        champ_insights: Champion insights DataFrame
-        queue_type: 'all', 'solo', or 'flex'
-    
-    Returns:
-        dict: Rich context for AI tools
-    """
     # Check if we need to rebuild context
     current_user = st.session_state.get('current_user_id', '')
     last_context_user = st.session_state.get('last_context_user', '')
@@ -165,15 +155,8 @@ def build_filtered_context(filtered_matches, metrics, champ_insights, queue_type
 
 
 def prepare_all_filtered_data(queue_type):
-    """
-    Main function: Get filtered matches and calculate all necessary metrics.
+    #Main function: Get filtered matches and calculate all necessary metrics.
     
-    Args:
-        queue_type: 'all', 'solo', or 'flex'
-    
-    Returns:
-        dict: Complete data package with all metrics and counts
-    """
     # Get filtered matches and counts
     filtered_matches, filtered_count, solo_count, flex_count, total_count = \
         get_filtered_matches_and_counts(queue_type)
@@ -252,8 +235,6 @@ def prepare_all_filtered_data(queue_type):
 
 
 def display_queue_filter_badge(queue_type, filtered_count, solo_count, flex_count):
-    """Display an info badge showing current filter and game counts."""
-    # Display filter badge at the top of content area
     if queue_type == "all":
         st.sidebar.info(f" Showing **All Games** ({filtered_count} total: {solo_count} Solo/Duo, {flex_count} Flex)")
     elif queue_type == "solo":

@@ -391,7 +391,7 @@ def render_advanced_stats(
 
 
 def display_role_metric(metric_type: str, data: dict):
-    """Helper function to display role-specific metrics consistently"""
+    #role-specific metrics
     if metric_type == 'jungle_objective':
         st.metric(
             label=" :material/target:    Jungle Objective Control",

@@ -89,7 +89,7 @@ def render_matchup_analysis(selected_queue_display):
 
 
 def display_matchup_details(data: dict):
-    """Helper function to display matchup details based on role"""
+    #matchup details based on role
     role = data.get('role', 'UNKNOWN')
     
     # Top row: Core stats (ALWAYS SHOWN)

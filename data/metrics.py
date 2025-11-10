@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 
 def calculate_advanced_metrics(df):
-    """Calculate comprehensive performance metrics from match data"""
     metrics = {}
     
     # Basic stats
@@ -198,10 +197,8 @@ def get_improvement_suggestions(metrics, df):
     return suggestions
 
 def calculate_early_late_game_stats(df, raw_matches):
-    """
-    Calculate early game (0-15min) vs late game (15min+) performance.
-    NOW FILTERS FOR LANER ROLES ONLY (TOP, MIDDLE, BOTTOM).
-    """
+    #Calculate laner-specific early game performance (wins vs losses)
+    
     # Filter for laner matches only
     laner_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') in ['TOP', 'MIDDLE', 'BOTTOM']]
     
@@ -254,10 +251,8 @@ def calculate_early_late_game_stats(df, raw_matches):
     }
 
 def calculate_laner_additional_metrics(raw_matches):
-    """
-    Calculate additional laner-specific metrics for performance tracking.
-    Only processes games where player was laning.
-    """
+   #laner-specific metrics
+    
     lane_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') in ['TOP', 'MIDDLE', 'BOTTOM']]
     if not lane_matches:
         return {
@@ -301,10 +296,8 @@ def calculate_laner_additional_metrics(raw_matches):
 
 
 def calculate_jungle_advanced_metrics(raw_matches):
-    """
-    Calculate advanced jungle-specific metrics for performance tracking.
-    Only processes games where player was jungling.
-    """
+    #jungle-specific metrics
+    
     jungle_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'JUNGLE']
     
     if not jungle_matches:
@@ -363,10 +356,7 @@ def calculate_jungle_advanced_metrics(raw_matches):
     }
 
 def calculate_support_advanced_metrics(raw_matches):
-    """
-    Calculate advanced support-specific metrics for performance tracking.
-    Only processes games where player was supporting.
-    """
+    #advanced support-specific metrics
     support_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'UTILITY']
     
     if not support_matches:
@@ -424,10 +414,8 @@ def calculate_support_advanced_metrics(raw_matches):
     }
 
 def calculate_support_early_game_stats(raw_matches):
-    """
-    Calculate support-specific early game performance (0-15 minutes).
-    Returns wins vs losses breakdown for support-relevant metrics.
-    """
+    #Calculate support-specific early game performance (wins vs losses)
+
     support_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'UTILITY']
     
     if not support_matches:
@@ -481,10 +469,7 @@ def calculate_support_early_game_stats(raw_matches):
     }
 
 def calculate_jungle_early_game_stats(raw_matches):
-    """
-    Calculate jungle-specific early game performance (0-15 minutes).
-    Returns wins vs losses breakdown for jungle-relevant metrics.
-    """
+    #Calculate jungle-specific early game performance (wins vs losses)
     jungle_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'JUNGLE']
     
     if not jungle_matches:
@@ -535,10 +520,8 @@ def calculate_jungle_early_game_stats(raw_matches):
     }
 
 def calculate_support_early_dominance(raw_matches):
-    """
-    Calculate early game dominance score specifically for support players.
-    Based on: support quest completion, vision advantage, and early assists.
-    """
+    #Calculate early game dominance score based on: support quest completion, vision advantage, and early assists.
+    
     support_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'UTILITY']
     
     if not support_matches:
@@ -567,10 +550,8 @@ def calculate_support_early_dominance(raw_matches):
     return dominance_score
 
 def calculate_jungle_early_dominance(raw_matches):
-    """
-    Calculate early game dominance score specifically for jungle players.
-    Based on: jungle CS advantage, gold differential, and early kills+assists.
-    """
+    #Calculate early game jungle dominance score based on: jungle CS advantage, gold differential, and early kills+assists.
+    
     jungle_matches = [m for m in raw_matches if m.get('teamPosition', 'UNKNOWN') == 'JUNGLE']
     
     if not jungle_matches:
@@ -602,10 +583,8 @@ def calculate_jungle_early_dominance(raw_matches):
 def _calculate_role_specific_tags(primary_role: str, secondary_role: str, raw_matches: list, 
                                    jungle_advanced: dict = None, support_advanced: dict = None,
                                    metrics: dict = None):
-    """
-    Helper function to calculate role-specific tags.
-    Returns dict with strengths and weaknesses lists.
-    """
+    #Helper function to calculate role-specific tags.
+    
     tags = {'strengths': [], 'weaknesses': []}
     
     # === LANER TAGS ===
@@ -718,20 +697,10 @@ def _calculate_role_specific_tags(primary_role: str, secondary_role: str, raw_ma
     return tags
 
 def calculate_playstyle_tags(metrics: dict, raw_matches: list, role_info: dict, jungle_advanced: dict = None, support_advanced: dict = None):
-    """
-    Calculate playstyle tags (strengths and weaknesses) based on player metrics.
-    Returns lists of tags with their scores for dynamic selection.
     
-    Args:
-        metrics: Advanced metrics dict
-        raw_matches: Raw match data
-        role_info: Role consistency dict with primary/secondary roles
-        jungle_advanced: Jungle-specific metrics (if applicable)
-        support_advanced: Support-specific metrics (if applicable)
+    #Calculate playstyle tags (strengths and weaknesses) based on player metrics.
+    #Returns lists of tags with their scores for dynamic selection.
     
-    Returns:
-        dict with 'strengths', 'weaknesses', and 'neutral' lists
-    """
     if metrics['total_games'] < 10:
         return {'strengths': [], 'weaknesses': [], 'neutral': []}
     
@@ -875,9 +844,8 @@ def calculate_playstyle_tags(metrics: dict, raw_matches: list, role_info: dict, 
     return tags
 
 def calculate_damage_efficiency(raw_matches: list):
-    """
-    Measures how efficiently a player converts gold earned into damage
-    """
+    #Measures how efficiently a player converts gold earned into damage
+    
     avg_dpg = sum((m.get('totalDamageDealtToChampions', 0)/m.get('goldEarned')) for m in raw_matches)/len(raw_matches) if raw_matches else 0
     for match in raw_matches:
         totalDamageToChampions = match.get('totalDamageDealtToChampions')
@@ -888,7 +856,8 @@ def calculate_damage_efficiency(raw_matches: list):
     return avg_dpg
 
 def calculate_objective_score(raw_matches: list):
-    #Measures how actively a player participates in fights
+    #Measures how actively a player participates in objectives (kills, dragons, barons, heralds and turrets)
+    
     if not raw_matches:
         return 0.0
     
@@ -910,7 +879,8 @@ def calculate_objective_score(raw_matches: list):
     return objective_score
 
 def calculate_persistence_score(raw_matches: list):
-    #Measures how actively a player participates in fights
+    #Measures how much a player never gives up even in losing games (by calculating objective score, combat share and kill participation in losing games)
+    
     if not raw_matches:
         return 0.0
     

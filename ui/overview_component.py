@@ -88,13 +88,6 @@ def display_rank_info_card(rank_data):
                 st.info("**Unranked**\nFlex")
 
 def display_playstyle_tags(tags: dict):
-    """
-    Display playstyle tags in a compact, flowing layout next to player info.
-    Similar to mobalytics.gg style with tight grouping and variable widths.
-    
-    Args:
-        tags: Dict with 'strengths', 'weaknesses', 'neutral' lists
-    """
     strengths = tags.get('strengths', [])
     weaknesses = tags.get('weaknesses', [])
     neutral = tags.get('neutral', [])
