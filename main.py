@@ -34,6 +34,13 @@ altair_chart_mobile_responsiveness()
 
 
 load_dotenv()
+# Set page config - MUST be first Streamlit command
+st.set_page_config(
+    page_title="riftMetrics",
+    page_icon="assets/RiftMetricsTransparent.png",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Get configuration from environment
 try:
