@@ -5,8 +5,12 @@ import os
 import httpx, asyncio
 from dotenv import load_dotenv
 
-load_dotenv()
-RIOT_API_KEY = os.getenv("RIOT_API_KEY")
+try:
+    from utils.secrets import get_riot_api_key
+    RIOT_API_KEY  = get_riot_api_key()
+except Exception as e:
+    #fallback
+    RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 
 
 def get_account_puuid_by_riot_id(game_name: str, tag_line: str) -> dict:

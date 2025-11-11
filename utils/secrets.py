@@ -14,12 +14,11 @@ def get_secret(secret_name):
         secret = json.loads(response['SecretString'])
         return secret
     except ClientError as e:
-        print(f"Error fetching secret: {e}")
         return None
 
 def get_riot_api_key():
     # Try Secrets Manager first
-    secrets = get_secret("rift-metrics/riot-api-key")
+    secrets = get_secret("RIOT_API_KEY")
     if secrets and "RIOT_API_KEY" in secrets:
         return secrets["RIOT_API_KEY"]
     
