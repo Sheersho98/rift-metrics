@@ -29,12 +29,27 @@ git clone https://github.com/YOUR_USERNAME/rift-metrics.git
 cd rift-metrics
 ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+```bash
+# Create the environment (named 'venv' here)
+python -m venv venv
+
+# Activate the environment (Linux/macOS)
+source venv/bin/activate
+
+# Activate the environment (Windows - PowerShell)
+# .\venv\Scripts\Activate.ps1
+
+# Activate the environment (Windows - Command Prompt)
+# .\venv\Scripts\activate.bat
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create `.env` file:
+4. Create `.env` file:
 ```env
 RIOT_API_KEY=your_riot_api_key
 AWS_ACCESS_KEY_ID=your_aws_access_key
@@ -43,7 +58,7 @@ AWS_REGION=us-west-2
 BEDROCK_MODEL_ID=us.anthropic.claude-3-7-sonnet-20250219-v1:0
 ```
 
-4. Run the app:
+5. Run the app:
 ```bash
 streamlit run main.py
 ```
