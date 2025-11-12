@@ -97,23 +97,121 @@ def fetch_all_match_data_direct(game_name: str, tag_line: str, region: str, max_
     RIOT_BURST_LIMIT = 20
     match_fetching_semaphore = asyncio.Semaphore(RIOT_BURST_LIMIT)
     
-    with st.spinner("Fetching player account data..."):
-        #fetch puuid (Sequential)
-        account_data = asyncio.run(get_account_puuid_by_riot_id_async(game_name, tag_line, httpx.AsyncClient(timeout=30.0)))
-        if 'error' in account_data:
-            raise Exception(f"Failed to get account: {account_data['error']}")
-        puuid = account_data['puuid']
-
-        #fetch all match ids (Sequential)
-        match_ids_full_list = asyncio.run(get_match_ids_by_puuid_async(region, puuid, max_matches, httpx.AsyncClient(timeout=30.0)))
-        if 'error' in match_ids_full_list:
-            raise Exception(f"Failed to get match IDs: {match_ids_full_list['error']}")
+    # Placeholder for any early rate limit waits
+    fetch_status_placeholder = st.empty()
+    
+    # Retry loop for account data in case of rate limiting
+    account_data = None
+    max_retries_for_account = 3
+    
+    for retry_attempt in range(max_retries_for_account):
+        with st.spinner("Fetching player account data..."):
+            #fetch puuid (Sequential)
+            try:
+                account_data = asyncio.run(get_account_puuid_by_riot_id_async(game_name, tag_line, httpx.AsyncClient(timeout=30.0)))
+            except Exception as e:
+                raise Exception(f"Failed to fetch account data: {str(e)}")
+                
+            if not isinstance(account_data, dict):
+                raise Exception(f"Invalid response format from account lookup")
             
-        match_ids_to_process = match_ids_full_list[:max_matches:]
+            # Check if we got rate limited
+            if 'retry_after' in account_data:
+                required_wait = account_data['retry_after']
+                fetch_status_placeholder.empty()
+                
+                # Show wait countdown to user
+                with fetch_status_placeholder.status(f"Riot API Rate Limit Hit. Waiting for counter reset...", expanded=True) as status:
+                    wait_bar = status.progress(0, text=f"Waiting {required_wait:.0f}s...")
+                    
+                    for remaining_time in range(int(required_wait), 0, -1):
+                        percent_complete = 1 - (remaining_time / required_wait)
+                        wait_bar.progress(percent_complete, text=f"Waiting {remaining_time:.0f}s for Riot API window reset...")
+                        time.sleep(1)
+                    
+                    status.update(label="Rate Limit Reset Complete!", state="complete", expanded=False)
+                    time.sleep(1)
+                
+                fetch_status_placeholder.empty()
+                st.toast("Rate limit window reset. Retrying account fetch!")
+                
+                # Retry after waiting
+                continue
+            
+            # Check for errors
+            if 'error' in account_data:
+                raise Exception(f"Failed to get account: {account_data['error']}")
+            
+            # Check for required field
+            if 'puuid' not in account_data:
+                raise Exception(f"Account data missing PUUID field")
+            
+            # Success
+            break
+    
+    # Final validation
+    if not account_data or 'puuid' not in account_data:
+        raise Exception(f"Failed to fetch account data after {max_retries_for_account} attempts")
+    
+    puuid = account_data['puuid']
+
+    # Retry loop for match IDs in case of rate limiting
+    match_ids_full_list = None
+    max_retries_for_match_ids = 3
+    
+    for retry_attempt in range(max_retries_for_match_ids):
+        with st.spinner("Fetching match list..."):
+            #fetch all match ids (Sequential)
+            try:
+                match_ids_full_list = asyncio.run(get_match_ids_by_puuid_async(region, puuid, max_matches, httpx.AsyncClient(timeout=30.0)))
+            except Exception as e:
+                raise Exception(f"Failed to fetch match IDs: {str(e)}")
+            
+            # Check if we got rate limited
+            if isinstance(match_ids_full_list, dict) and 'retry_after' in match_ids_full_list:
+                required_wait = match_ids_full_list['retry_after']
+                fetch_status_placeholder.empty()
+                
+                # Show wait countdown to user
+                with fetch_status_placeholder.status(f"Riot API Rate Limit Hit. Waiting for counter reset...", expanded=True) as status:
+                    wait_bar = status.progress(0, text=f"Waiting {required_wait:.0f}s...")
+                    
+                    for remaining_time in range(int(required_wait), 0, -1):
+                        percent_complete = 1 - (remaining_time / required_wait)
+                        wait_bar.progress(percent_complete, text=f"Waiting {remaining_time:.0f}s for Riot API window reset...")
+                        time.sleep(1)
+                    
+                    status.update(label="Rate Limit Reset Complete!", state="complete", expanded=False)
+                    time.sleep(1)
+                
+                fetch_status_placeholder.empty()
+                st.toast("Rate limit window reset. Retrying match list fetch!")
+                
+                # Retry after waiting
+                continue
+            
+            # Check for other errors
+            if isinstance(match_ids_full_list, dict):
+                if 'error' in match_ids_full_list:
+                    raise Exception(f"Failed to get match IDs: {match_ids_full_list['error']}")
+                else:
+                    raise Exception(f"Unexpected response format when fetching match IDs: {match_ids_full_list}")
+            
+            # Success - we got a list
+            if isinstance(match_ids_full_list, list):
+                break
+            
+            # Should not reach here, but just in case
+            raise Exception(f"Expected list of match IDs but got {type(match_ids_full_list).__name__}")
+    
+    # Final validation after retry loop
+    if not isinstance(match_ids_full_list, list):
+        raise Exception(f"Failed to fetch match IDs after {max_retries_for_match_ids} attempts")
+    
+    match_ids_to_process = match_ids_full_list[:max_matches]
 
     # lists to store final results
     final_all_matches = []
-    fetch_status_placeholder = st.empty()
     # loop as long as there are matches left to process
     while match_ids_to_process: 
         
